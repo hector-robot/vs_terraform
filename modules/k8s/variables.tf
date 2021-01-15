@@ -42,6 +42,16 @@ variable "k8s-worker-cpus" {
     type = number
 }
 
+variable "xoaurl" {
+    type = string
+    default = "ws://xoa.hq.vs"
+}
+
+variable "xoauser" {
+    type = string
+    default = "admin"
+}
+
 variable "xoapw" {
     type = string
     sensitive = true
