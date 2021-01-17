@@ -4,13 +4,17 @@ terraform {
       source = "terra-farm/xenorchestra"
       version = "0.12.0"
     }
+    vault = {
+      source = "hashicorp/vault"
+      version = "2.17.0"
+    }
   }
 }
 
 provider "xenorchestra" {
-  url       = var.xoaurl
-  username  = var.xoauser
-  password  = var.xoapw
+  url       = data.vault_generic_secret.xoa_provisioner.data["url"]
+  username  = data.vault_generic_secret.xoa_provisioner.data["username"]
+  password  = data.vault_generic_secret.xoa_provisioner.data["password"]
 }
 
 resource "xenorchestra_vm" "worker_nodes" {
@@ -35,10 +39,14 @@ resource "xenorchestra_vm" "worker_nodes" {
     provisioner "local-exec" {
       command           = "cd ~/projects/vs_ansible && ansible-playbook -i hosts --limit ${each.key} playbook.yml"
     }
+
+    provisioner "local-exec" {
+      when              = destroy
+      command           = "cd ~/projects/vs_ansible && ansible -i hosts ${each.key} -u ansible --become -a \"systemctl stop consul\""
+    }
 }
 
 resource "xenorchestra_vm" "master_nodes" {
-    #count               = length(var.k8s-master-instances)
     for_each = toset(var.k8s-master-instances)
     memory_max          = var.k8s-master-memory_size
     cpus                = var.k8s-master-cpus
@@ -58,5 +66,10 @@ resource "xenorchestra_vm" "master_nodes" {
 
     provisioner "local-exec" {
       command           = "cd ~/projects/vs_ansible && ansible-playbook -i hosts --limit ${each.key} playbook.yml"
+    }
+
+    provisioner "local-exec" {
+      when              = destroy
+      command           = "cd ~/projects/vs_ansible && ansible -i hosts ${each.key} -u ansible --become -a \"systemctl stop consul\""
     }
 }
