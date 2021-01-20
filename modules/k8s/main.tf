@@ -37,7 +37,7 @@ resource "xenorchestra_vm" "worker_nodes" {
     }
 
     provisioner "local-exec" {
-      command           = "cd ~/projects/vs_ansible && ansible-playbook -i hosts --limit ${each.key} playbook.yml"
+      command           = "cd ~/projects/vs_ansible && ansible-playbook -i consul_inventory --limit ${each.key} playbook.yml"
     }
 
     provisioner "local-exec" {
@@ -65,7 +65,7 @@ resource "xenorchestra_vm" "master_nodes" {
     }
 
     provisioner "local-exec" {
-      command           = "cd ~/projects/vs_ansible && ansible-playbook -i hosts --limit ${each.key} playbook.yml"
+      command           = "cd ~/projects/vs_ansible && ansible-playbook -i consul_inventory --limit ${each.key} playbook.yml"
     }
 
     provisioner "local-exec" {
