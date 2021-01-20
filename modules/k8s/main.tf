@@ -37,12 +37,12 @@ resource "xenorchestra_vm" "worker_nodes" {
     }
 
     provisioner "local-exec" {
-      command           = "cd ~/projects/vs_ansible && ansible-playbook -i consul_inventory --limit ${each.key} playbook.yml"
+      command           = "cd ~/projects/vs_ansible && ansible-playbook -i ${each.key}, playbook.yml"
     }
 
     provisioner "local-exec" {
       when              = destroy
-      command           = "cd ~/projects/vs_ansible && ansible -i hosts ${each.key} -u ansible --become -a \"systemctl stop consul\""
+      command           = "cd ~/projects/vs_ansible && ansible -i consul_inventory ${each.key} -u ansible --become -a \"systemctl stop consul\""
     }
 }
 
@@ -65,11 +65,11 @@ resource "xenorchestra_vm" "master_nodes" {
     }
 
     provisioner "local-exec" {
-      command           = "cd ~/projects/vs_ansible && ansible-playbook -i consul_inventory --limit ${each.key} playbook.yml"
+      command           = "cd ~/projects/vs_ansible && ansible-playbook -i ${each.key}, playbook.yml"
     }
 
     provisioner "local-exec" {
       when              = destroy
-      command           = "cd ~/projects/vs_ansible && ansible -i hosts ${each.key} -u ansible --become -a \"systemctl stop consul\""
+      command           = "cd ~/projects/vs_ansible && ansible -i consul_inventory ${each.key} -u ansible --become -a \"systemctl stop consul\""
     }
 }
